@@ -32,7 +32,7 @@ class Item(Resource):
     def get(self, name):
         if not list(filter(lambda x: x['item_name'] == name, items)):
             return make_response(jsonify({'message': "Item {} doesn't exist".format(name)}), 404)
-        return make_response(list(filter(lambda x: x['item_name'] == name, items)), 200)
+        return make_response(list(filter(lambda x: x['item_name'] == name, items))[0], 200)
 
     # PUT /items/<name>/
     def put(self, name):
