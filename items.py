@@ -148,4 +148,7 @@ class ItemList(Resource):
         row = cur.execute(query).fetchall()
 
         con.close()
-        return make_response(jsonify(row), 200)
+        return_list = []
+        for el in row:
+            return_list.append({"item_name": el[1], "price": el[2]})
+        return make_response(jsonify(return_list), 200)
