@@ -57,7 +57,7 @@ class Item:
         cur = con.cursor()
 
         query = "UPDATE items SET name = ?, price = ? WHERE name = ?"
-        cur.execute(query, (data['item_name'], data['price'], name))
+        cur.execute(query, (name, data['price'], name))
 
         con.commit()
         con.close()
@@ -100,10 +100,10 @@ class ItemSource(Resource):
     def put(self, name):
         item = Item.find_by_name(name)
         if item:
-            self.parser.add_argument('item_name')
+            self.parser.add_argument('price')
             data = self.parser.parse_args()
             Item.change_item(name, data)
-            return make_response(jsonify(data), 200)
+            return make_response(jsonify({"item_name": name, "price": data['price']}), 200)
         return self.post(name)
 
     # DELETE /items/<name>/
