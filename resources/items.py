@@ -13,7 +13,7 @@ class ItemResource(Resource):
     # POST /items/<name>/ -> price
     @jwt_required()
     def post(self, name):
-        if Item.query.filter_by(item_name=name).first():
+        if Item.find_by_name(name):
             return make_response(jsonify({'message': "Item {} already exists".format(name)}), 208)
         data = self.parser.parse_args()
         item = Item(item_name=name, price=data["price"])
@@ -24,7 +24,7 @@ class ItemResource(Resource):
     # GET /items/<name>/
     @jwt_required()
     def get(self, name):
-        item = Item.query.filter_by(item_name=name).first()
+        item = Item.find_by_name(name)
         if not item:
             return make_response(jsonify({'message': "Item {} doesn't exist".format(name)}), 404)
         return make_response(jsonify({"item_name": item.item_name, "price": item.price}), 200)
@@ -32,18 +32,18 @@ class ItemResource(Resource):
     # PUT /items/<name>/ -> price
     @jwt_required()
     def put(self, name):
-        item = Item.query.filter_by(item_name=name).first()
+        item = Item.find_by_name(name)
         if item:
             self.parser.add_argument('price') #changed to price
             data = self.parser.parse_args()
             Item.price = data["price"]
-            return make_response(jsonify(data), 200)
+            return make_response(jsonify({"item_name": name, "price": data['price']}), 200)
         return self.post(name)
 
     # DELETE /items/<name>/
     @jwt_required()
     def delete(self, name):
-        item = Item.query.filter_by(item_name=name).first()
+        item = Item.find_by_name(name)
         if item:
             db.session.delete(item)
             return '', 204
@@ -61,7 +61,7 @@ class ItemList(Resource):
         valid_list = []
         not_valid_list = []
         for item in data['items']:
-            if not Item.query.filter_by(item_name=item['item_name']).first():
+            if not Item.find_by_name(item['item_name']):
                 valid_list.append(item['item_name'])
                 item = Item(item_name=item['item_name'], price=item["price"])
                 db.session.add(item)
@@ -77,7 +77,7 @@ class ItemList(Resource):
     # GET /items
     @jwt_required()
     def get(self):
-        row = Item.query.all()
+        row = Item.get_all()
         return_list = []
         for el in row:
             return_list.append({"item_name": el[1], "price": el[2]})

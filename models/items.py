@@ -8,3 +8,11 @@ class Item(db.Model):
 
     def __repr__(self):
         return '<Item %r>' % self.item_name
+
+    @staticmethod
+    def find_by_name(name):
+        return Item.query.filter_by(item_name=name).first()
+
+    @staticmethod
+    def get_all():
+        return Item.query.all()
