@@ -80,6 +80,6 @@ class ItemList(Resource):
         row = Item.get_all()
         return_list = []
         for el in row:
-            return_list.append({"item_name": el[1], "price": el[2]})
+            return_list.append({"item_name": el.item_name, "price": el.price})
         return make_response(jsonify(return_list), 200)
 
